@@ -7,11 +7,13 @@ import tensorflow as tf
 import utils
 import models
 from os.path import join
+import time
+from datetime import datetime, timedelta
 
-TRAIN_PATH = './data/mirflickr/images1/images/'
+TRAIN_PATH = '/kaggle/input/mirflickr-1m/'
 LOGS_Path = "./logs/"
-CHECKPOINTS_PATH = './checkpoints/'
-SAVED_MODELS = './saved_models'
+CHECKPOINTS_PATH = 'checkpoints/'
+SAVED_MODELS = './new_models/'
 
 if not os.path.exists(CHECKPOINTS_PATH):
     os.makedirs(CHECKPOINTS_PATH)
@@ -86,7 +88,7 @@ def main():
 
     EXP_NAME = args.exp_name
 
-    files_list = glob.glob(join(TRAIN_PATH,"**/*"))
+    files_list = glob.glob(f'{TRAIN_PATH}/images*/images/*/*.jpg')
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -153,8 +155,12 @@ def main():
     total_steps = len(files_list)//args.batch_size + 1
     global_step = 0
 
+    start_time = time.time()
+    
     while global_step < args.num_steps:
         for _ in range(min(total_steps,args.num_steps-global_step)):
+            step_start_time = time.time()
+            
             no_im_loss = global_step < args.no_im_loss_steps
             images, secrets = get_img_batch(files_list=files_list,
                                                      secret_size=args.secret_size,
@@ -186,7 +192,15 @@ def main():
                 if not args.no_gan:
                     sess.run([train_dis_op, clip_D],feed_dict)
 
-            if global_step % 100 ==0 :
+            step_time = time.time() - step_start_time
+            total_time_elapsed = time.time() - start_time
+            steps_remaining = args.num_steps - global_step
+            eta_seconds = (total_time_elapsed / global_step) * steps_remaining if global_step > 0 else 0
+            eta = timedelta(seconds=int(eta_seconds))
+            if global_step % 100 == 0 :
+                print(f"Step: {global_step}, Time per Step: {step_time:.2f} seconds, ETA: {eta}")
+            
+            if global_step % 100 == 0 :
                 summary, global_step = sess.run([summary_op,global_step_tensor], feed_dict)
                 writer.add_summary(summary, global_step)
                 summary = tf.Summary(value=[tf.Summary.Value(tag='transformer/rnd_tran', simple_value=rnd_tran),

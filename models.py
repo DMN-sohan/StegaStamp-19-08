@@ -156,7 +156,7 @@ def transform_net(encoded_image, args, global_step):
     encoded_image_lum = tf.expand_dims(tf.reduce_sum(encoded_image * tf.constant([.3,.6,.1]), axis=3), 3)
     encoded_image = (1 - rnd_sat) * encoded_image + rnd_sat * encoded_image_lum
 
-    encoded_image = tf.reshape(encoded_image, [-1,400,400,3])
+    encoded_image = tf.reshape(encoded_image, [-1,args.height,args.width,3])
     if not args.no_jpeg:
         encoded_image = utils.jpeg_compress_decompress(encoded_image, rounding=utils.round_only_at_0, factor=jpeg_factor, downsample_c=True)
 

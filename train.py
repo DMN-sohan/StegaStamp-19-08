@@ -84,6 +84,8 @@ def main():
     parser.add_argument('--jpeg_quality_ramp', type=float, default=1000)
     parser.add_argument('--no_im_loss_steps', help="Train without image loss for first x steps", type=int, default=500)
     parser.add_argument('--pretrained', type=str, default=None)
+    parser.add_argument('--height', type=int, default=400)
+    parser.add_argument('--width', type=int, default=400)
     args = parser.parse_args()
 
     EXP_NAME = args.exp_name
@@ -94,8 +96,8 @@ def main():
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
 
-    height = 400
-    width = 400
+    height = args.height
+    width = args.width
 
     secret_pl = tf.placeholder(shape=[None,args.secret_size],dtype=tf.float32,name="input_prep")
     image_pl = tf.placeholder(shape=[None,height,width,3],dtype=tf.float32,name="input_hide")

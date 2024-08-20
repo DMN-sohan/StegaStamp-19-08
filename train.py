@@ -10,10 +10,7 @@ from os.path import join
 import time
 from datetime import datetime, timedelta
 
-TRAIN_PATH = '/kaggle/input/mirflickr-1m/'
-LOGS_Path = "./logs/"
-CHECKPOINTS_PATH = 'checkpoints/'
-SAVED_MODELS = './new_models/'
+
 
 if not os.path.exists(CHECKPOINTS_PATH):
     os.makedirs(CHECKPOINTS_PATH)
@@ -46,6 +43,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('exp_name', type=str)
+    parser.add_argument('--dataset', type=str, default=None)
     parser.add_argument('--secret_size', type=int, default=20)
     parser.add_argument('--num_steps', type=int, default=140000)
     parser.add_argument('--batch_size', type=int, default=4)
@@ -88,6 +86,10 @@ def main():
     parser.add_argument('--width', type=int, default=400)
     args = parser.parse_args()
 
+    TRAIN_PATH = args.dataset
+    LOGS_Path = "./logs/"
+    CHECKPOINTS_PATH = 'checkpoints/'
+    SAVED_MODELS = './new_models/'
     EXP_NAME = args.exp_name
 
     files_list = glob.glob(f'{TRAIN_PATH}/images*/images/*/*.jpg')

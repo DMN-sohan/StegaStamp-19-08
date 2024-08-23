@@ -11,10 +11,6 @@ import time
 from datetime import datetime, timedelta
 
 
-
-if not os.path.exists(CHECKPOINTS_PATH):
-    os.makedirs(CHECKPOINTS_PATH)
-
 def get_img_batch(files_list,
                   secret_size,
                   batch_size=4,
@@ -91,6 +87,8 @@ def main():
     CHECKPOINTS_PATH = 'checkpoints/'
     SAVED_MODELS = './new_models/'
     EXP_NAME = args.exp_name
+
+    if not os.path.exists(CHECKPOINTS_PATH): os.makedirs(CHECKPOINTS_PATH)
 
     files_list = glob.glob(f'{TRAIN_PATH}/images*/images/*/*.jpg')
 
